@@ -1,29 +1,29 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta charset="UTF-8">
-<title>3秒前に戻るメモ</title>
-</head>
 <body>
 
-<textarea id="memo" rows="10" cols="40"></textarea><br>
-<button onclick="undo()">3秒前に戻る</button>
+<video id="video" autoplay></video>
+<canvas id="canvas"></canvas>
+<button onclick="snap()">撮影</button>
 
 <script>
-let history = [];
-let memo = document.getElementById("memo");
+const video = document.getElementById("video");
 
-// 3秒ごとに保存
-setInterval(() => {
-    history.push(memo.value);
-    if(history.length > 20) history.shift(); // 古いの削除
-}, 3000);
+// カメラ起動
+navigator.mediaDevices.getUserMedia({ video: true })
+.then(stream => {
+  video.srcObject = stream;
+});
 
-// 戻る処理
-function undo(){
-    if(history.length > 0){
-        memo.value = history.pop();
-    }
+// 撮影
+function snap(){
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+
+  ctx.drawImage(video, 0, 0);
 }
 </script>
 
