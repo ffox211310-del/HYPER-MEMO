@@ -151,35 +151,41 @@ function capture(){
   const videoRect = video.getBoundingClientRect();
   const overlayRect = overlay.getBoundingClientRect();
 
+  // ===== 9:16 固定 =====
+  const width = 1080;
+  const height = 1920;
+
+  canvas.width = width;
+  canvas.height = height;
+
   const vw = video.videoWidth;
   const vh = video.videoHeight;
 
-  canvas.width = vw;
-  canvas.height = vh;
+  // ===== カメラを9:16で中央トリミング =====
+  const targetRatio = width / height;
+  const videoRatio = vw / vh;
 
-  // ===== ここが超重要 =====
-  // object-fit: cover のズレ補正
-  const aspectVideo = vw / vh;
-  const aspectScreen = videoRect.width / videoRect.height;
+  let sx, sy, sw, sh;
 
-  let sx = 0, sy = 0, sw = vw, sh = vh;
-
-  if (aspectScreen > aspectVideo) {
-    // 横に広い → 上下カット
-    sh = vw / aspectScreen;
-    sy = (vh - sh) / 2;
-  } else {
-    // 縦に長い → 左右カット
-    sw = vh * aspectScreen;
+  if (videoRatio > targetRatio) {
+    // 横長 → 左右カット
+    sh = vh;
+    sw = vh * targetRatio;
     sx = (vw - sw) / 2;
+    sy = 0;
+  } else {
+    // 縦長 → 上下カット
+    sw = vw;
+    sh = vw / targetRatio;
+    sx = 0;
+    sy = (vh - sh) / 2;
   }
 
-  // カメラ描画（トリミングあり）
-  ctx.drawImage(video, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+  ctx.drawImage(video, sx, sy, sw, sh, 0, 0, width, height);
 
-  // ===== overlayの補正 =====
-  const scaleX = canvas.width / videoRect.width;
-  const scaleY = canvas.height / videoRect.height;
+  // ===== overlayの位置補正 =====
+  const scaleX = width / videoRect.width;
+  const scaleY = height / videoRect.height;
 
   ctx.globalAlpha = overlay.style.opacity || 1;
 
@@ -194,10 +200,10 @@ function capture(){
   ctx.globalAlpha = 1;
 
   const link = document.createElement("a");
-  link.download = "ar.png";
+  link.download = "ar_9_16.png";
   link.href = canvas.toDataURL();
   link.click();
-  }
+}
 
 </script>
 
