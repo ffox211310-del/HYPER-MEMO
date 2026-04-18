@@ -162,6 +162,14 @@ function capture(){
   const canvas = document.getElementById("canvas");
   const ctx = canvas.getContext("2d");
 
+  const s = shadowSlider.value;
+const b = blurSlider.value;
+
+ctx.shadowColor = "rgba(0,0,0,0.5)";
+ctx.shadowBlur = b;
+ctx.shadowOffsetX = s;
+ctx.shadowOffsetY = s;
+  
   const videoRect = video.getBoundingClientRect();
   const overlayRect = overlay.getBoundingClientRect();
 
@@ -195,6 +203,15 @@ function capture(){
     sy = (vh - sh) / 2;
   }
 
+  ctx.shadowColor = "rgba(0,0,0,0.5)";
+ctx.shadowBlur = blurSlider.value;
+ctx.shadowOffsetX = shadowSlider.value;
+ctx.shadowOffsetY = shadowSlider.value;
+
+ctx.drawImage(overlay, ...);
+
+ctx.shadowColor = "transparent"; // リセット
+  
   ctx.drawImage(video, sx, sy, sw, sh, 0, 0, width, height);
 
   // ===== overlayの位置補正 =====
